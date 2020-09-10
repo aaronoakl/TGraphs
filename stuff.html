@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+<head>
+  <title>Network</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <style type="text/css">
+    #mynetwork {
+      width: 1000px;
+      height: 800px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+  <select id="program-list" onchange="myFun()"><option></option></select>
+  <br><br>
+<div id="mynetwork"></div>
+<script type="text/javascript">
+var i;
+var array = [];
+for(i = 1; i < 6; i++) {
+  array[i] = i;
+}
+  // create an array with nodes
+  var nodes = new vis.DataSet([]); 
+  // create an array with edges
+  var edges = new vis.DataSet([]); 
+
+  var x = document.getElementById("program-list");
+  z = 0
+  window.onload = function() {
+  this.fetch("classes.json")
+    .then(x => x.text())
+    .then(JSON.parse)
+    .then(data => {
+      // data is the course and program data
+      for(i = 0; i < data.Programs.length; i++) {
+        x.add(new Option(data.Programs[i].Name))
+      }
+      z = -1
+      e = 0
+    });
+}
+var mylist;
+  xp = 0
+  function myFun() {
+    this.fetch("classes.json")
+    .then(x => x.text())
+    .then(JSON.parse)
+    .then(data => {          
+      for(i = z-1; i >= 0; i--) {
+        network.selectNodes([i])
+        network.deleteSelected()
+      }
+      z = -1
+      e = 0
+      xp = -400
+      var i = 0
+     var stuff = data.Programs[0].Name
+     while(stuff != document.getElementById("program-list").value) {
+      i++
+      stuff = data.Programs[i].Name
+     }
+     var count = 0
+     var list = data.CourseList.filter(course => course.CourseNum.includes(data.Programs[i].Prefix))
+     mylist = list
+     for(x = 0; x < list.length; x++) {
+      nodes.add([{id: count, label: list[x].Class + '\n' + list[x].CourseNum, hidden: false}])
+      count++
+      if(z == -1) {
+        z = 1
+      }
+      else {
+        z++
+      }
+     }
+
+     for(x = 0; x < list.length; x++) {
+       for(j = 0; j < list[x].Prerequisites.length; j++) {
+        if(list[x].Prerequisites[j].kind == "Consent") {
+          nodes.update([{id: x, color: {background:'red'}}])
+        } 
+        else if(list[x].Prerequisites[j].kind == "Senior") {
+          nodes.update([{id: x, color: {background:'blue'}}])
+        }
+        else if(list[x].Prerequisites[j].kind == "Sophmore") {
+          nodes.update([{id: x, color: {background:'yellow'}}])
+        }        
+        else if(list[x].Prerequisites[j].kind == "BOR") {
+          nodes.update([{id: x, color: {background:'orange'}}])
+        }        
+        else if(list[x].Prerequisites[j].kind == "special") {
+          for(cu = 0; cu < list[x].Prerequisites[j].courses.length; cu++) {
+            nodes.update([{id: x, label: nodes.get(x).label + '\n' + list[x].Prerequisites[j].courses[cu], color: {background:'purple'}}])
+          }
+        }
+        else if(list[x].Prerequisites[j].kind == "Credits") {
+          for(cu = 0; cu < list[x].Prerequisites[j].courses.length; cu++) {
+            nodes.update([{id: x, label: nodes.get(x).label + '\n' + list[x].Prerequisites[j].courses[cu] + " Credits", color: {background:'pink'}}])
+          }
+        }
+        else {
+         for(k = 0; k < list[x].Prerequisites[j].courses.length; k++) {
+          for(l = 0; l < list.length; l++) {
+            if(list[l].CourseNum == list[x].Prerequisites[j].courses[k]) {
+              if(list[x].Prerequisites[j].kind == "any") {
+                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true}]) 
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+              }              
+              else if(list[x].Prerequisites[j].kind == "sany") {
+                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color: 'brown'}])
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+
+              }
+              else if(list[x].Prerequisites[j].kind == "C all") {
+                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color:'green'}])
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+
+              }
+              else if(list[x].Prerequisites[j].kind == "C any") {
+                edges.add([{id: e, from: l, to: x, arrows: "to", color:'green'}])                 
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+
+              }              
+              else if(list[x].Prerequisites[j].kind == "core") {
+                edges.add([{id: e, from: l, to: x, arrows: "to", color:'red'}]) 
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+
+              }
+              else if(list[x].Prerequisites[j].kind == "core/or") {
+                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color:'pink'}])
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+
+              }
+              else {
+                edges.add([{id: e, from: l, to: x, arrows: "to"}])
+                nodes.update([{id: x, hidden: true, hide: true}])
+                nodes.update([{id: l, hide: true}])
+              }
+              e++
+            }
+            }
+          }
+         }
+        }
+       }
+       for(j = 0; j < list.length; j++) {
+         for(k = 0; k < list[j].Corequisite.length; k++) {
+          for(l = 0; l < list.length; l++) {
+            if(list[j].Corequisite[k] == list[l].CourseNum) {
+              fact = 0
+              for(m = 0; m < edges.length; m++) {
+                if((edges.get(m).to == l && edges.get(m).from == j) || (edges.get(m).to == j && edges.get(m).from == l))
+                  fact = 1
+              }
+              if(fact == 0) {
+              edges.add([{id: e, from: l, to: j, color: {background: 'cyan'}}])
+              e++}
+            }
+          }
+         }
+       }
+    });
+  }
+ 
+
+
+
+
+
+  // create a network
+  var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = 
+  {
+    physics: { 
+      barnesHut: {
+        springLength: 200,
+        avoidOverlap: .15
+      }
+    }
+  };
+
+  function runThrough(ids) {
+    console.log(nodes.get(ids).hide)
+    accurate = nodes.get(ids).hide
+    nodes.update([{id: ids, hide: !accurate}])
+    for(run = 0; run < mylist.length; run++) {
+      for(fun = 0; fun < mylist[run].Prerequisites.length; fun++) {
+        for(sun = 0; sun < mylist[run].Prerequisites[fun].courses.length; sun++) {
+          if(mylist[ids].CourseNum == mylist[run].Prerequisites[fun].courses[sun]) {
+              accurate = nodes.get(run).hidden
+              if(accurate == false) {
+                nodes.update([{id: run, hide: true}])
+              }
+              nodes.update([{id: run, hidden: !accurate}])
+          }
+        }
+      }
+    }
+    for(run = 0; run < mylist.length; run++) {
+      for(fun = 0; fun < mylist[run].Prerequisites.length; fun++) {
+        for(sun = 0; sun < mylist[run].Prerequisites[fun].courses.length; sun++) {
+          for(bun = 0; bun < mylist.length; bun++) {
+            if(mylist[run].Prerequisites[fun].courses[sun] == mylist[bun].CourseNum) {
+              if(nodes.get(bun).hidden == true) {
+                nodes.update([{id: run, hidden: true, hide: true}])
+              }
+              for(bon = 0; bon < mylist[run].Prerequisites.length; bon++) {
+                for(son = 0; son < mylist[run].Prerequisites[bon].courses.length; son++) {
+                  for(don = 0; don < mylist.length; don++) {
+                    if(mylist[run].Prerequisites[bon].courses[son] == mylist[don].CourseNum) {
+                      if(nodes.get(don).hide == false) {
+                        nodes.update([{id: run, hidden: false}])
+                      }
+                    }
+                  }
+              }
+            }
+            }
+          }
+        }
+      }
+    }
+  }
+  var network = new vis.Network(container, data, options);
+  network.on( 'click', function(properties) {
+    var ids = properties.nodes;
+    ids = ids[0]
+    if(ids != undefined) {
+    runThrough(ids)
+    }
+});
+</script>
+</body>
+</html>

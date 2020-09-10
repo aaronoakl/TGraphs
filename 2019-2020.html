@@ -1,0 +1,947 @@
+<!doctype html>
+<html>
+<head>
+  <title>2019-2020</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <style type="text/css">
+    #mynetwork {
+      width: 1000px;
+      height: 800px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+  <button id="Save" onclick="save()">Save State</button>
+  <button id="Load" onclick="load()">Load State</button>
+  <br>
+  <select id="program-list" onchange="myFun()"><option></option></select>
+  <br><br>
+  <button id="Add" onclick="addText()">Add Major</button>
+  <button id="DeleteMajor" onclick="deleteMajor()">Delete Major</button>
+  <br>
+  <form>
+    <span id="fooBar">&nbsp;</span>
+  </form>
+  <!--<button id="AddMinor" onclick="addMinor()">Add Minor</button>
+  <button id="DeleteMinor" onclick="deleteMinor()">Delete Minor</button>-->
+  <br>
+  <form>
+    <span id="minorBar">&nbsp;</span>
+  </form>
+  <br>
+<div id="mynetwork"></div>
+<script src="2019-2020MoF.js"></script>
+<script type="text/javascript">
+  // create an array with nodes
+  var nodes = new vis.DataSet([]);
+  // create an array with edges
+  var edges = new vis.DataSet([]); 
+  var x = document.getElementById("Catalog-Year");
+  window.onload = function() {
+  var x = document.getElementById("program-list");
+  this.fetch("classes.json")
+    .then(x => x.text())
+    .then(JSON.parse)
+    .then(data => {
+      // data is the course and program data
+      for(i = 1; i < data.Bachelors2019.length; i++) {
+        x.add(new Option(data.Bachelors2019[i].Name))
+      }
+      z = -1
+      e = 0
+      count = 0
+    });
+  }
+var list = []
+var numList = []
+  xp = 0
+  function myFun() {
+    this.fetch("classes.json")
+    .then(x => x.text())
+    .then(JSON.parse)
+    .then(data => {          
+      for(i = z-1; i >= 0; i--) {
+        network.selectNodes([i])
+        network.deleteSelected()
+      }
+      z = -1
+      e = 0
+      xp = -400
+      list = []
+      numList = []
+      var i = 0
+    if(document.getElementById("program-list").value != "") {
+     var stuff = data.Bachelors2019[0].Name
+     while(stuff != document.getElementById("program-list").value) {
+      i++
+      stuff = data.Bachelors2019[i].Name
+     }
+     count = 0
+     //var list = data.CourseList.filter(course => course.CourseNum.includes(data.Programs[i].Prefix))
+     //mylist = list
+     for(x = 0; x < data.Bachelors2019[i].all.length; x++) {
+      nodes.add([{id: count, label: data.Bachelors2019[i].all[x], hidden: false}])
+      list.push(data.Bachelors2019[i].all[x])
+      count++
+      if(z == -1) {
+        z = 1
+      }
+      else {
+        z++
+      }
+     }
+     for(x = 0; x < data.Bachelors2019[i].or.length; x++) {
+      for(hex = 0; hex < data.Bachelors2019[i].or[x].Courses.length; hex++) {
+        nodes.add([{id: count, label: data.Bachelors2019[i].or[x].Courses[hex], hidden: false, shape: "hexagon"}])
+        list.push(data.Bachelors2019[i].or[x].Courses[hex])
+        count++
+        if(z == -1) {
+         z = 1
+        }
+        else {
+          z++
+        }
+      }
+     }
+     for(x = 0; x < data.Bachelors2019[i].Choose.length; x++) {
+       if(data.Bachelors2019[i].Choose[x].kind == "Choose 3") {
+          for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+            nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 3", hidden: false, shape: "star"}])
+            list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+          }
+       }
+       else if(data.Bachelors2019[i].Choose[x].kind == "Choose 1") {
+          for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+            nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 1", hidden: false, shape: "star", color:{background:"red"}}])
+            list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+          }
+       }
+       else if(data.Bachelors2019[i].Choose[x].kind == "Choose 6") {
+          for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+            nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 6", hidden: false, shape: "star", color:{background:"orange"}}])
+            list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+          }
+       }
+       else if(data.Bachelors2019[i].Choose[x].kind == "Choose 9") {
+          for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+            nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 9", hidden: false, shape: "star", color:{background:"brown"}}])
+            list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+          }
+       }
+       else if(data.Bachelors2019[i].Choose[x].kind == "Choose 12") {
+          for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+            nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 12", hidden: false, shape: "star", color:{background:"green"}}])
+            list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+          }
+       }
+     }
+
+    for(x = 0; x < data.Bachelors2019[i].Pre.length; x++) {
+        y = 0
+        stuff = data.Bachelors2019[y].Name
+        while(stuff != data.Bachelors2019[i].Pre[x]) {
+          y++
+          stuff = data.Bachelors2019[y].Name
+        }
+        for(b = 0; b < data.Bachelors2019[y].all.length; b++) {
+          nodes.add([{id: count, label: data.Bachelors2019[y].all[b], hidden: false}])
+          list.push(data.Bachelors2019[y].all[b])
+          count++
+          if(z == -1) {
+            z = 1
+          }
+          else {
+            z++
+          }
+        }
+       for(b = 0; b < data.Bachelors2019[y].Choose.length; b++) {
+        if(data.Bachelors2019[y].Choose[b].kind == "Choose 3") {
+          for(a = 0; a < data.Bachelors2019[y].Choose[b].Courses.length; a++) {
+            nodes.add([{id: count, label: data.Bachelors2019[y].Choose[b].Courses[a] + " 3", hidden: false, shape: "star", color:{background:"purple"}}])
+            list.push(data.Bachelors2019[y].Choose[b].Courses[a])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+          }
+       }
+       }
+    }
+    for(y = 0; y < data.Bachelors2019[i].MajorElectives.length; y++) {
+       if(data.Bachelors2019[i].MajorElectives[y].Amount == "6") {
+        for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+          nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box"}])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+        }
+       }
+        else if(data.Bachelors2019[i].MajorElectives[y].Amount == "3") {
+        for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+          nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box", color:{background:"red"}}])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+        }
+       }
+       else if(data.Bachelors2019[i].MajorElectives[y].Amount == "9") {
+        for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+          nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box", color:{background:"green"}}])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+        }
+       }
+       if(data.Bachelors2019[i].MajorElectives[y].Amount == "4-7") {
+        for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+          nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box", color:{background:"brown"}}])
+            count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+        }
+       }
+     }
+     nodes.add([{id: count, label: data.Bachelors2019[i].Electives, hidden: false, color:{background: "white", border:"black"}}])
+     count++
+            if(z == -1) {
+              z = 1
+            }
+            else {
+              z++
+            }
+     for(x = 0; x < list.length; x++) {
+        for(catc = 0; catc < data.CourseList.length; catc++) {
+            if(data.CourseList[catc].CourseNum == list[x]) {
+                numList.push(catc)
+                for(j = 0; j < data.CourseList[catc].Prerequisites.length; j++) {
+                    if(data.CourseList[catc].Prerequisites[j].kind == "Consent") {
+                        nodes.update([{id: x, color: {background:'red'}}])
+                    } 
+                    else if(data.CourseList[catc].Prerequisites[j].kind == "Senior") {
+                        nodes.update([{id: x, color: {background:'blue'}}])
+                    }
+                    else if(data.CourseList[catc].Prerequisites[j].kind == "Sophmore") {
+                        nodes.update([{id: x, color: {background:'yellow'}}])
+                    }        
+                    else if(data.CourseList[catc].Prerequisites[j].kind == "BOR") {
+                        nodes.update([{id: x, color: {background:'orange'}}])
+                    }        
+                    else if(data.CourseList[catc].Prerequisites[j].kind == "special") {
+                        for(cu = 0; cu < data.CourseList[catc].Prerequisites[j].courses.length; cu++) {
+                            nodes.update([{id: x, label: nodes.get(x).label + '\n' + data.CourseList[catc].Prerequisites[j].courses[cu], color: {background:'purple'}}])
+                        }
+                    }
+                    else if(data.CourseList[catc].Prerequisites[j].kind == "Credits") {
+                    for(cu = 0; cu < data.CourseList[catc].Prerequisites[j].courses.length; cu++) {
+                        nodes.update([{id: x, label: nodes.get(x).label + '\n' + data.CourseList[catc].Prerequisites[j].courses[cu] + " Credits", color: {background:'pink'}}])
+                    }
+                    }
+                    else {
+                    for(k = 0; k < data.CourseList[catc].Prerequisites[j].courses.length; k++) {
+                    for(l = 0; l < list.length; l++) {
+                        if(list[l] == data.CourseList[catc].Prerequisites[j].courses[k]) {
+                            if(data.CourseList[catc].Prerequisites[j].kind == "any") {
+                                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true}]) 
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+                            }                
+                            else if(data.CourseList[catc].Prerequisites[j].kind == "sany") {
+                                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color: 'brown'}])
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+
+                            }
+                            else if(data.CourseList[catc].Prerequisites[j].kind == "C all") {
+                                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color:'green'}])
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+
+                            }
+                            else if(data.CourseList[catc].Prerequisites[j].kind == "C any") {
+                                edges.add([{id: e, from: l, to: x, arrows: "to", color:'green'}])                 
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+
+                            }              
+                            else if(data.CourseList[catc].Prerequisites[j].kind == "core") {
+                                edges.add([{id: e, from: l, to: x, arrows: "to", color:'red'}]) 
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+                            }
+                            else if(data.CourseList[catc].Prerequisites[j].kind == "core/or") {
+                                edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color:'pink'}])
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+                            }
+                            else {
+                                edges.add([{id: e, from: l, to: x, arrows: "to"}])
+                                nodes.update([{id: x, hidden: true, hide: true}])
+                                nodes.update([{id: l, hide: true}])
+                            }
+                            e++
+                        }
+                    }
+                    }
+                    }
+                }
+            }
+            }
+       }
+       for(j = 0; j < list.length; j++) {
+         console.log(data.CourseList[numList[j]])
+         for(k = 0; k < data.CourseList[numList[j]].Corequisite.length; k++) {
+          for(l = 0; l < list.length; l++) {
+            if(data.CourseList[numList[j]].Corequisite[k] == list[l]) {
+              fact = 0
+              for(m = 0; m < edges.length; m++) {
+                if((edges.get(m).to == l && edges.get(m).from == j) || (edges.get(m).to == j && edges.get(m).from == l))
+                  fact = 1
+              }
+              if(fact == 0) {
+              edges.add([{id: e, from: l, to: j, color: {background: 'cyan'}}])
+              console.log("Added edge from " + l + " to " + j)
+              console.log(list)
+              e++}
+            }
+          }
+         }
+       }
+    }});
+  }
+
+  function moreFun(Names) {
+    this.fetch("classes.json")
+      .then(x => x.text())
+      .then(JSON.parse)
+      .then(data => {
+      if(document.getElementById(Names).value != "") {
+       var stuff = data.Bachelors2019[0].Name
+       i = 0
+       while(stuff != document.getElementById(Names).value) {
+        i++
+        stuff = data.Bachelors2019[i].Name
+       }
+       for(x = 0; x < data.Bachelors2019[i].all.length; x++) {
+        goodtogo = 0
+        for (y = 0; y < count; y++) {  
+          if(nodes.get(y).label == data.Bachelors2019[i].all[x]) {
+            goodtogo = 1
+          }
+        }
+        if (goodtogo == 0) {
+          nodes.add([{id: count, label: data.Bachelors2019[i].all[x], hidden: false}])
+          list.push(data.Bachelors2019[i].all[x])
+          count++
+          if(z == -1) {
+            z = 1
+          }
+          else {
+            z++
+          }
+        }
+       }
+       for(x = 0; x < data.Bachelors2019[i].or.length; x++) {
+          for(hex = 0; hex < data.Bachelors2019[i].or[x].Courses.length; hex++) {
+            goodtogo = 0
+            for (y = 0; y < count; y++) {
+              if(nodes.get(y).label == data.Bachelors2019[i].or[x]) {
+                goodtogo = 1
+              }
+            }
+            if (goodtogo == 0) {
+              nodes.add([{id: count, label: data.Bachelors2019[i].or[x].Courses[hex], hidden: false, shape: "hexagon"}])
+              list.push(data.Bachelors2019[i].or[x].Courses[hex])
+              count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              } 
+            }
+        }
+       }
+       for(x = 0; x < data.Bachelors2019[i].Choose.length; x++) {
+          if(data.Bachelors2019[i].Choose[x].kind == "Choose 3") {
+            for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+              goodtogo = 0
+              for (pi = 0; pi < count; pi++) {
+                console.log(nodes.get(pi).label, data.Bachelors2019[i].Choose[x].Courses[y] + " 3")
+                if(nodes.get(pi).label == data.Bachelors2019[i].Choose[x].Courses[y] + " 3") {
+                  goodtogo = 1
+                }
+              }
+              if (goodtogo == 0) {
+                nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 3", hidden: false, shape: "star"}])
+                list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+                count++
+                if(z == -1) {
+                 z = 1
+                }
+                else {
+                 z++
+              }
+            }
+          }
+         }
+         else if(data.Bachelors2019[i].Choose[x].kind == "Choose 1") {
+            for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+              goodtogo = 0
+              for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].Choose[x].Courses[y] + " 1") {
+                  goodtogo = 1
+                }
+              }
+              if (goodtogo == 0) {
+                nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 1", hidden: false, shape: "star", color:{background:"red"}}])
+                list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+                count++
+                if(z == -1) {
+                  z = 1
+                }
+                else {
+                  z++
+              }
+            }
+          }
+         }
+         else if(data.Bachelors2019[i].Choose[x].kind == "Choose 6") {
+            for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+              goodtogo = 0
+              for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].Choose[x].Courses[y] + " 6") {
+                  goodtogo = 1
+                }
+              }
+              if (goodtogo == 0) {
+                nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 6", hidden: false, shape: "star", color:{background:"orange"}}])
+                list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+                count++
+                if(z == -1) {
+                  z = 1
+                }
+                else {
+                  z++
+                }
+            }
+          }
+         }
+         else if(data.Bachelors2019[i].Choose[x].kind == "Choose 9") {
+            for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+              goodtogo = 0
+              for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].Choose[x].Courses[y] + " 9") {
+                  goodtogo = 1
+                }
+              }
+              if (goodtogo == 0) {
+                nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 9", hidden: false, shape: "star", color:{background:"brown"}}])
+                list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+                count++
+                if(z == -1) {
+                  z = 1
+                }
+                else {
+                  z++
+                }
+              }
+            }
+          }
+         else if(data.Bachelors2019[i].Choose[x].kind == "Choose 12") {
+            for(y = 0; y < data.Bachelors2019[i].Choose[x].Courses.length; y++) {
+              goodtogo = 0
+              for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].Choose[x].Courses[y] + " 12") {
+                  goodtogo = 1
+                }
+              }
+              if (goodtogo == 0) {
+                nodes.add([{id: count, label: data.Bachelors2019[i].Choose[x].Courses[y] + " 12", hidden: false, shape: "star", color:{background:"green"}}])
+                list.push(data.Bachelors2019[i].Choose[x].Courses[y])
+                count++
+                if(z == -1) {
+                  z = 1
+                }
+                else {
+                  z++
+                }
+              }
+            }
+          }
+      }
+  
+      for(x = 0; x < data.Bachelors2019[i].Pre.length; x++) {
+          y = 0
+          stuff = data.Bachelors2019[y].Name
+          while(stuff != data.Bachelors2019[i].Pre[x]) {
+            y++
+            stuff = data.Bachelors2019[y].Name
+          }
+          for(b = 0; b < data.Bachelors2019[y].all.length; b++) {
+            goodtogo = 0
+            for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[y].all[b]) {
+                  goodtogo = 1
+                }
+              }
+            if (goodtogo == 0) {
+              nodes.add([{id: count, label: data.Bachelors2019[y].all[b], hidden: false}])
+              list.push(data.Bachelors2019[y].all[b])
+              count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              }
+            }
+          }
+         for(b = 0; b < data.Bachelors2019[y].Choose.length; b++) {
+          if(data.Bachelors2019[y].Choose[b].kind == "Choose 3") {
+            for(a = 0; a < data.Bachelors2019[y].Choose[b].Courses.length; a++) {
+              goodtogo = 0
+              for (pi = 0; pi < count; pi++) {
+                console.log(nodes.get(pi).label, data.Bachelors2019[y].Choose[b].Courses[a] + " 3")
+                if(nodes.get(pi).label == data.Bachelors2019[y].Choose[b].Courses[a] + " 3") {
+                  goodtogo = 1
+                }
+              }
+              if (goodtogo == 0) {
+                nodes.add([{id: count, label: data.Bachelors2019[y].Choose[b].Courses[a] + " 3", hidden: false, shape: "star", color:{background:"purple"}}])
+                list.push(data.Bachelors2019[y].Choose[b].Courses[a])
+                count++
+                if(z == -1) {
+                  z = 1
+                }
+                else {
+                  z++
+                }
+              }
+            }
+          }
+         }
+      }
+      for(y = 0; y < data.Bachelors2019[i].MajorElectives.length; y++) {
+         if(data.Bachelors2019[i].MajorElectives[y].Amount == "6") {
+          for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+            goodtogo = 0
+            for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level) {
+                  goodtogo = 1
+                }
+              }
+            if (goodtogo == 0) {
+              nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box"}])
+              count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              }
+            }
+          }
+         }
+          else if(data.Bachelors2019[i].MajorElectives[y].Amount == "3") {
+          for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+            goodtogo = 0
+            for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level) {
+                  goodtogo = 1
+                }
+              }
+            if (goodtogo == 0) {
+              nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box", color:{background:"red"}}])
+              count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              }
+            }
+          }
+         }
+         else if(data.Bachelors2019[i].MajorElectives[y].Amount == "9") {
+          for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+            goodtogo = 0
+            for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level) {
+                  goodtogo = 1
+                }
+              }
+            if (goodtogo == 0) {
+              nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box", color:{background:"green"}}])
+              count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              }
+            }
+          }
+         }
+         if(data.Bachelors2019[i].MajorElectives[y].Amount == "4-7") {
+          for(x = 0; x < data.Bachelors2019[i].MajorElectives[y].Courses.length; x++) {
+            goodtogo = 0
+            for (pi = 0; pi < count; pi++) {
+                if(nodes.get(pi).label == data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level) {
+                  goodtogo = 1
+                }
+              }
+            if (goodtogo == 0) {
+              nodes.add([{id: count, label: data.Bachelors2019[i].MajorElectives[y].Courses[x].kind + " " + data.Bachelors2019[i].MajorElectives[y].Courses[x].level, hidden: false, shape: "box", color:{background:"brown"}}])
+              count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              }
+            }
+          }
+         }
+       }
+       nodes.add([{id: count, label: data.Bachelors2019[i].Electives, hidden: false, color:{background: "white", border:"black"}}])
+       count++
+              if(z == -1) {
+                z = 1
+              }
+              else {
+                z++
+              }
+       for(x = 0; x < list.length; x++) {
+          for(catc = 0; catc < data.CourseList.length; catc++) {
+              if(data.CourseList[catc].CourseNum == list[x]) {
+                  numList.push(catc)
+                  for(j = 0; j < data.CourseList[catc].Prerequisites.length; j++) {
+                      if(data.CourseList[catc].Prerequisites[j].kind == "Consent") {
+                          nodes.update([{id: x, color: {background:'red'}}])
+                      } 
+                      else if(data.CourseList[catc].Prerequisites[j].kind == "Senior") {
+                          nodes.update([{id: x, color: {background:'blue'}}])
+                      }
+                      else if(data.CourseList[catc].Prerequisites[j].kind == "Sophmore") {
+                          nodes.update([{id: x, color: {background:'yellow'}}])
+                      }        
+                      else if(data.CourseList[catc].Prerequisites[j].kind == "BOR") {
+                          nodes.update([{id: x, color: {background:'orange'}}])
+                      }        
+                      else if(data.CourseList[catc].Prerequisites[j].kind == "special") {
+                          for(cu = 0; cu < data.CourseList[catc].Prerequisites[j].courses.length; cu++) {
+                              nodes.update([{id: x, label: nodes.get(x).label + '\n' + data.CourseList[catc].Prerequisites[j].courses[cu], color: {background:'purple'}}])
+                          }
+                      }
+                      else if(data.CourseList[catc].Prerequisites[j].kind == "Credits") {
+                      for(cu = 0; cu < data.CourseList[catc].Prerequisites[j].courses.length; cu++) {
+                          nodes.update([{id: x, label: nodes.get(x).label + '\n' + data.CourseList[catc].Prerequisites[j].courses[cu] + " Credits", color: {background:'pink'}}])
+                      }
+                      }
+                      else {
+                      for(k = 0; k < data.CourseList[catc].Prerequisites[j].courses.length; k++) {
+                      for(l = 0; l < list.length; l++) {
+                          if(list[l] == data.CourseList[catc].Prerequisites[j].courses[k]) {
+                            goodtogo = 0
+                            for (pi = 0; pi < e; pi++) {
+                              if(edges.get(pi).from == l && edges.get(pi).to == x) {
+                                goodtogo = 1
+                              }
+                            }
+                            if (goodtogo == 0) {
+                              if(data.CourseList[catc].Prerequisites[j].kind == "any") {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true}]) 
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+                              }                
+                              else if(data.CourseList[catc].Prerequisites[j].kind == "sany") {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color: 'brown'}])
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+  
+                              }
+                              else if(data.CourseList[catc].Prerequisites[j].kind == "C all") {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color:'green'}])
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+  
+                              }
+                              else if(data.CourseList[catc].Prerequisites[j].kind == "C any") {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to", color:'green'}])                 
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+  
+                              }              
+                              else if(data.CourseList[catc].Prerequisites[j].kind == "core") {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to", color:'red'}]) 
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+                              }
+                              else if(data.CourseList[catc].Prerequisites[j].kind == "core/or") {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to", dashes: true, color:'pink'}])
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+                              }
+                              else {
+                                  edges.add([{id: e, from: l, to: x, arrows: "to"}])
+                                  nodes.update([{id: x, hidden: true, hide: true}])
+                                  nodes.update([{id: l, hide: true}])
+                              }
+                              e++
+                          }
+                        }
+                      }
+                      }
+                      }
+                  }
+              }
+              }
+         }
+         for(j = 0; j < list.length; j++) {
+           for(k = 0; k < data.CourseList[numList[j]].Corequisite.length; k++) {
+            for(l = 0; l < list.length; l++) {
+              if(data.CourseList[numList[j]].Corequisite[k] == list[l]) {
+                fact = 0
+                for(m = 0; m < edges.length; m++) {
+                  if((edges.get(m).to == l && edges.get(m).from == j) || (edges.get(m).to == j && edges.get(m).from == l))
+                    fact = 1
+                }
+                if(fact == 0) {
+                edges.add([{id: e, from: l, to: j, color: {background: 'cyan'}}])
+                console.log("Added edge from " + l + " to " + j)
+                console.log(list)
+                e++}
+              }
+            }
+           }
+         }
+      }});
+  }
+
+MajorList = []
+MinorList = []
+this.fetch("classes.json")
+    .then(x => x.text())
+    .then(JSON.parse)
+    .then(data => {
+      // data is the course and program data
+      for(i = 1; i < data.Bachelors2019.length; i++) {
+        MajorList.push(data.Bachelors2019[i].Name)
+      }
+      for(i = 1; i < data.Minors2019.length; i++) {
+        MinorList.push(data.Minors2019[i].Name)
+      }
+    });
+
+function deleteMajor() {
+  element = document.getElementById("program-list" + moreoptions).remove()
+  bele = document.getElementById("br" + moreoptions).remove()
+  moreoptions-=1
+}
+moreoptions = 0
+function addText() {
+  moreoptions += 1
+  var element = document.createElement("SELECT");
+  var bele = document.createElement("br");
+  bele.setAttribute("id", "br" + moreoptions)
+  element.setAttribute("id", "program-list" + moreoptions);
+  element.addEventListener(
+    'change',
+    function() {moreFun("program-list" + moreoptions)},
+    false
+  )
+  var foo = document.getElementById("fooBar");
+  foo.appendChild(element);
+  foo.appendChild(bele);
+  var x = document.getElementById("program-list" + moreoptions);
+  x.add(new Option(" "))
+  for (i = 0; i < MajorList.length; i++) {
+    x.add(new Option(MajorList[i]))
+  }
+}
+minoroptions = 0
+function addMinor() {
+  minoroptions += 1
+  var element = document.createElement("SELECT");
+  var bele = document.createElement("br");
+  element.setAttribute("id", "program-list" + minoroptions);
+  element.addEventListener(
+    'change',
+    function() {minorFun("program-list" + minoroptions)},
+    false
+  )
+  var foo = document.getElementById("minorBar");
+  foo.appendChild(element);
+  foo.appendChild(bele);
+  var y = document.getElementById("program-list" + minoroptions);
+  y.add(new Option(" "))
+  for (i = 0; i < MinorList.length; i++) {
+    y.add(new Option(MinorList[i]))
+  }
+}
+
+function minorFun(Names) {
+
+}
+var i;
+var array = [];
+for(i = 1; i < 6; i++) {
+  array[i] = i;
+}
+
+
+
+
+  // create a network
+  var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = 
+  {
+    physics: { 
+      barnesHut: {
+        springLength: 200,
+        avoidOverlap: .15
+      }
+    }
+  };
+
+  function runThrough(ids) {
+    this.fetch("classes.json")
+    .then(x => x.text())
+    .then(JSON.parse)
+    .then(data => {  
+      accurate = nodes.get(ids).hide
+      nodes.update([{id: ids, hide: !accurate}])
+      for(run = 0; run < list.length; run++) {
+        for(fun = 0; fun < data.CourseList[numList[run]].Prerequisites.length; fun++) {
+          for(sun = 0; sun < data.CourseList[numList[run]].Prerequisites[fun].courses.length; sun++) {
+            if(list[ids] == data.CourseList[numList[run]].Prerequisites[fun].courses[sun]) {
+                accurate = nodes.get(run).hidden
+                if(accurate == false) {
+                  nodes.update([{id: run, hide: true}])
+                }
+                nodes.update([{id: run, hidden: !accurate}])
+            }
+          }
+        }
+      }
+      for(run = 0; run < list.length; run++) {
+        for(fun = 0; fun < data.CourseList[numList[run]].Prerequisites.length; fun++) {
+          for(sun = 0; sun < data.CourseList[numList[run]].Prerequisites[fun].courses.length; sun++) {
+            for(bun = 0; bun < list.length; bun++) {
+              if(data.CourseList[numList[run]].Prerequisites[fun].courses[sun] == list[bun]) {
+                if(nodes.get(bun).hidden == true) {
+                  nodes.update([{id: run, hidden: true, hide: true}])
+                }
+                for(bon = 0; bon < data.CourseList[numList[run]].Prerequisites.length; bon++) {
+                  for(son = 0; son < data.CourseList[numList[run]].Prerequisites[bon].courses.length; son++) {
+                    for(don = 0; don < list.length; don++) {
+                      if(data.CourseList[numList[run]].Prerequisites[bon].courses[son] == list[don]) {
+                        if(nodes.get(don).hide == false) {
+                          nodes.update([{id: run, hidden: false}])
+                        }
+                      }
+                    }
+                }
+              }
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function save() {
+    for (batch = 0; batch < count; batch++) {
+      localStorage.setItem("Node" + batch, JSON.stringify(nodes.get(batch)))
+      console.log(nodes.get(batch))
+    }
+    localStorage.setItem("z", z)
+    localStorage.setItem("e", e)
+    localStorage.setItem("count", count)
+    console.log(count)
+  }
+  function load() {
+    for(i = z-1; i >= 0; i--) {
+        network.selectNodes([i])
+        network.deleteSelected()
+    }
+    z = localStorage.getItem("z")
+    e = localStorage.getItem("e")
+    count = localStorage.getItem("count")
+    console.log(count)
+    for (batch = 0; batch < count; batch++) {
+      console.log(localStorage.getItem(JSON.parse("Node" + batch)))
+    }
+  }
+
+  var network = new vis.Network(container, data, options);
+  network.on( 'click', function(properties) {
+    var ids = properties.nodes;
+    ids = ids[0]
+    if(ids != undefined) {
+    runThrough(ids)
+    }
+});
+</script>
+</body>
+</html>
